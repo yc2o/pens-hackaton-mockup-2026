@@ -824,6 +824,205 @@ const BAAK_SYSTEM_LOGS = [
   }
 ];
 
+// ==========================================================================
+// 0. LOCALIZATION ENGINE (I18N: INDONESIAN & ENGLISH)
+// ==========================================================================
+const I18N_DICTIONARY = {
+  id: {
+    roleMahasiswa: "Mahasiswa",
+    roleDosen: "Dosen",
+    roleBaak: "BAAK",
+    roleDescMahasiswa: "3 D4 IT A",
+    roleDescDosen: "Departemen Teknik Informatika",
+    roleDescBaak: "Pusat Pelayanan & Penjadwalan",
+    roleOptDescMahasiswa: "Realdho Fahryz (1234567890)",
+    roleOptDescDosen: "Dr. Ir. Budi Sxxxx, M.T.",
+    roleOptDescBaak: "Biro Administrasi Akademik PENS",
+    switchRole: "Ganti Peran",
+    signOut: "Keluar",
+    classLabel: "Kelas",
+    langTitle: "Bahasa / Language",
+    themeTitle: "Mode Tampilan",
+    themeLight: "Terang",
+    themeDark: "Gelap",
+    themeAuto: "Otomatis",
+    accessTitle: "Aksesibilitas",
+    accessDyslexia: "Ramah Disleksia (OpenDyslexic)",
+    accessContrast: "Mode Kontras Tinggi",
+    navDashboard: "Dashboard",
+    navClasses: "Matakuliah",
+    navSchedule: "Jadwal",
+    navReschedule: "Pindah Jadwal",
+    navChat: "Chat AI",
+    navRequests: "Permintaan Jadwal",
+    navRooms: "Ruangan",
+    navSubjects: "Subjek",
+    navLecturers: "Dosen",
+    navStudents: "Mahasiswa",
+    navSystemLogs: "Log & Sistem",
+    toastLangSwitched: "Bahasa antarmuka diubah ke Bahasa Indonesia."
+  },
+  en: {
+    roleMahasiswa: "Student",
+    roleDosen: "Lecturer",
+    roleBaak: "Academic Office",
+    roleDescMahasiswa: "3rd Year Informatics Engineering A",
+    roleDescDosen: "Informatics Engineering Department",
+    roleDescBaak: "Academic Administration Service Center",
+    roleOptDescMahasiswa: "Realdho Fahryz (1234567890)",
+    roleOptDescDosen: "Dr. Ir. Budi Sxxxx, M.T.",
+    roleOptDescBaak: "PENS Academic Administration Bureau",
+    switchRole: "Switch Role",
+    signOut: "Sign Out",
+    classLabel: "Class",
+    langTitle: "Language",
+    themeTitle: "Appearance",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeAuto: "Auto",
+    accessTitle: "Accessibility",
+    accessDyslexia: "Dyslexia Friendly (OpenDyslexic)",
+    accessContrast: "High Contrast Mode",
+    navDashboard: "Dashboard",
+    navClasses: "Courses",
+    navSchedule: "Timetable",
+    navReschedule: "Reschedule",
+    navChat: "AI Assistant",
+    navRequests: "Change Requests",
+    navRooms: "Rooms",
+    navSubjects: "Subjects",
+    navLecturers: "Lecturers",
+    navStudents: "Students",
+    navSystemLogs: "Logs & System",
+    toastLangSwitched: "Interface language switched to English."
+  }
+};
+
+let currentLanguage = localStorage.getItem("penscheduler_lang") || "id";
+
+function initLanguage() {
+  const savedLang = localStorage.getItem("penscheduler_lang") || "id";
+  setAppLanguage(savedLang, false);
+}
+
+function setAppLanguage(langKey, showToastNotification = true) {
+  currentLanguage = langKey;
+  localStorage.setItem("penscheduler_lang", langKey);
+  document.documentElement.setAttribute("lang", langKey);
+
+  document.querySelectorAll(".btn-lang-pill").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.langVal === langKey);
+  });
+
+  applyLocalization();
+  if (showToastNotification) {
+    showToast(I18N_DICTIONARY[langKey].toastLangSwitched);
+  }
+}
+
+function applyLocalization() {
+  const dict = I18N_DICTIONARY[currentLanguage] || I18N_DICTIONARY.id;
+
+  // 1. User card & switcher texts
+  const switchRoleEl = document.getElementById("role-switcher-label-text");
+  if (switchRoleEl) switchRoleEl.textContent = dict.switchRole;
+
+  const currentRoleTitleEl = document.getElementById("current-role-title");
+  if (currentRoleTitleEl) {
+    currentRoleTitleEl.textContent = currentRole === "mahasiswa" ? dict.roleMahasiswa : currentRole === "dosen" ? dict.roleDosen : dict.roleBaak;
+  }
+
+  const currentRoleDescEl = document.getElementById("current-role-desc");
+  if (currentRoleDescEl) {
+    currentRoleDescEl.textContent = currentRole === "mahasiswa" ? dict.roleDescMahasiswa : currentRole === "dosen" ? dict.roleDescDosen : dict.roleDescBaak;
+  }
+
+  const userRoleBadge = document.getElementById("user-role-badge");
+  if (userRoleBadge) {
+    userRoleBadge.textContent = currentRole === "mahasiswa" ? dict.roleMahasiswa : currentRole === "dosen" ? dict.roleDosen : dict.roleBaak;
+  }
+
+  const popoverRole = document.getElementById("popover-role");
+  if (popoverRole) {
+    popoverRole.textContent = currentRole === "mahasiswa" ? dict.roleMahasiswa : currentRole === "dosen" ? dict.roleDosen : dict.roleBaak;
+  }
+
+  const classLabel = document.getElementById("popover-class-label");
+  if (classLabel) classLabel.textContent = dict.classLabel;
+
+  const langTitle = document.getElementById("popover-lang-title");
+  if (langTitle) langTitle.textContent = dict.langTitle;
+
+  const themeTitle = document.getElementById("popover-theme-title");
+  if (themeTitle) themeTitle.textContent = dict.themeTitle;
+
+  const lightText = document.getElementById("theme-btn-light-text");
+  if (lightText) lightText.textContent = dict.themeLight;
+
+  const darkText = document.getElementById("theme-btn-dark-text");
+  if (darkText) darkText.textContent = dict.themeDark;
+
+  const autoText = document.getElementById("theme-btn-auto-text");
+  if (autoText) autoText.textContent = dict.themeAuto;
+
+  const accessTitle = document.getElementById("popover-access-title");
+  if (accessTitle) accessTitle.textContent = dict.accessTitle;
+
+  const accessDys = document.getElementById("access-label-dyslexia");
+  if (accessDys) accessDys.textContent = dict.accessDyslexia;
+
+  const accessCont = document.getElementById("access-label-contrast");
+  if (accessCont) accessCont.textContent = dict.accessContrast;
+
+  const logoutText = document.querySelector(".logout-text");
+  if (logoutText) logoutText.textContent = dict.signOut;
+
+  // Update Role Switcher Dropdown Descriptions
+  document.querySelectorAll(".role-option-item").forEach(item => {
+    const role = item.dataset.role;
+    const titleEl = item.querySelector(".role-option-title");
+    const descEl = item.querySelector(".role-option-desc");
+    if (role === "mahasiswa") {
+      if (titleEl) titleEl.textContent = dict.roleMahasiswa;
+      if (descEl) descEl.textContent = dict.roleOptDescMahasiswa;
+    } else if (role === "dosen") {
+      if (titleEl) titleEl.textContent = dict.roleDosen;
+      if (descEl) descEl.textContent = dict.roleOptDescDosen;
+    } else if (role === "baak") {
+      if (titleEl) titleEl.textContent = dict.roleBaak;
+      if (descEl) descEl.textContent = dict.roleOptDescBaak;
+    }
+  });
+
+  // Re-render sidebar and breadcrumb
+  renderSidebarNavForRole(currentRole);
+  updateBreadcrumbText();
+}
+
+function updateBreadcrumbText() {
+  const dict = I18N_DICTIONARY[currentLanguage] || I18N_DICTIONARY.id;
+  const breadcrumbText = document.getElementById("breadcrumb-current-text");
+  const breadcrumbLabels = {
+    dashboard: dict.navDashboard,
+    classes: dict.navClasses,
+    "class-detail": currentLanguage === "en" ? "Course Detail" : "Detail Matakuliah",
+    schedule: dict.navSchedule,
+    reschedule: currentRole === "mahasiswa"
+      ? (currentLanguage === "en" ? "Course Reschedule Request" : "Pengajuan Pindah Jadwal Perkuliahan")
+      : (currentLanguage === "en" ? "Course Rescheduling" : "Pindah Jadwal Perkuliahan"),
+    "baak-requests": currentLanguage === "en" ? "Schedule Requests Ledger" : "Daftar Permintaan Pindah Jadwal",
+    "baak-rooms": dict.navRooms,
+    "baak-subjects": dict.navSubjects,
+    "baak-lecturers": dict.navLecturers,
+    "baak-students": dict.navStudents,
+    "baak-system-logs": dict.navSystemLogs,
+    chat: dict.navChat
+  };
+  if (breadcrumbText) {
+    breadcrumbText.textContent = breadcrumbLabels[activeCurrentView] || dict.navDashboard;
+  }
+}
+
 // Active State Variables
 let currentRole = "mahasiswa";
 let activeCurrentView = "dashboard";
@@ -848,6 +1047,7 @@ function getSimulatedTodayDay() {
 
 // Initialize DOM
 document.addEventListener("DOMContentLoaded", () => {
+  initLanguage();
   initThemeAndAccessibility();
   setupSidebarAndNavbarToggles();
   setupRoleSwitcher();
@@ -1003,24 +1203,7 @@ function navigateToView(viewName) {
   }
 
   // Update Breadcrumbs
-  const breadcrumbText = document.getElementById("breadcrumb-current-text");
-  const breadcrumbLabels = {
-    dashboard: "Dashboard",
-    classes: "Matakuliah",
-    "class-detail": "Detail Matakuliah",
-    schedule: "Jadwal",
-    reschedule: currentRole === "mahasiswa" ? "Pengajuan Pindah Jadwal Perkuliahan" : "Pindah Jadwal Perkuliahan",
-    "baak-requests": "Daftar Permintaan Pindah Jadwal",
-    "baak-rooms": "Ruangan",
-    "baak-subjects": "Subjek Perkuliahan",
-    "baak-lecturers": "Daftar Dosen",
-    "baak-students": "Daftar Mahasiswa",
-    "baak-system-logs": "Log & Sistem",
-    chat: "Asisten AI"
-  };
-  if (breadcrumbText) {
-    breadcrumbText.textContent = breadcrumbLabels[viewName] || "Dashboard";
-  }
+  updateBreadcrumbText();
 
   if (window.innerWidth <= 768) {
     document.getElementById("app-sidebar").classList.remove("mobile-open");
@@ -1036,13 +1219,17 @@ function renderActiveRole(roleKey) {
   const profile = APP_DATA[roleKey];
   if (!profile) return;
 
+  const dict = I18N_DICTIONARY[currentLanguage] || I18N_DICTIONARY.id;
+  const localizedRoleLabel = roleKey === "mahasiswa" ? dict.roleMahasiswa : roleKey === "dosen" ? dict.roleDosen : dict.roleBaak;
+  const localizedDeptClass = roleKey === "mahasiswa" ? dict.roleDescMahasiswa : roleKey === "dosen" ? dict.roleDescDosen : dict.roleDescBaak;
+
   // 1. Topbar & Profile
   document.getElementById("user-display-name").textContent = profile.name;
-  document.getElementById("user-role-badge").textContent = profile.roleLabel;
+  document.getElementById("user-role-badge").textContent = localizedRoleLabel;
   document.getElementById("user-avatar-circle").textContent = profile.avatarChar;
   document.getElementById("role-avatar-badge").textContent = profile.avatarChar;
-  document.getElementById("current-role-title").textContent = profile.roleLabel;
-  document.getElementById("current-role-desc").textContent = profile.departmentClass || "Departemen Teknik Informatika";
+  document.getElementById("current-role-title").textContent = localizedRoleLabel;
+  document.getElementById("current-role-desc").textContent = localizedDeptClass;
 
   document.querySelectorAll(".role-option-item").forEach(item => {
     item.classList.toggle("selected", item.dataset.role === roleKey);
@@ -1051,7 +1238,7 @@ function renderActiveRole(roleKey) {
   // 2. Profile Popover
   document.getElementById("popover-avatar").textContent = profile.avatarChar;
   document.getElementById("popover-name").textContent = profile.name;
-  document.getElementById("popover-role").textContent = profile.roleLabel;
+  document.getElementById("popover-role").textContent = localizedRoleLabel;
   document.getElementById("popover-id-label").textContent = profile.idType;
   document.getElementById("popover-id-value").textContent = profile.idNumber;
   document.getElementById("popover-email-value").textContent = profile.email;
@@ -1102,97 +1289,98 @@ function renderActiveRole(roleKey) {
 function renderSidebarNavForRole(roleKey) {
   const navContainer = document.getElementById("sidebar-dynamic-nav");
   if (!navContainer) return;
+  const dict = I18N_DICTIONARY[currentLanguage] || I18N_DICTIONARY.id;
 
   if (roleKey === "mahasiswa") {
     navContainer.innerHTML = `
-      <a href="#" class="nav-item-link active" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="Dashboard">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'dashboard' ? 'active' : ''}" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="${dict.navDashboard}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span class="nav-text">Dashboard</span>
+        <span class="nav-text">${dict.navDashboard}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="classes" onclick="navigateToView('classes'); return false;" title="Matakuliah">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'classes' ? 'active' : ''}" data-nav="classes" onclick="navigateToView('classes'); return false;" title="${dict.navClasses}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span class="nav-text">Matakuliah</span>
+        <span class="nav-text">${dict.navClasses}</span>
         <span class="nav-badge" id="nav-badge-classes-count">${APP_DATA.mahasiswa.classes.length}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="schedule" onclick="navigateToView('schedule'); return false;" title="Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'schedule' ? 'active' : ''}" data-nav="schedule" onclick="navigateToView('schedule'); return false;" title="${dict.navSchedule}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span class="nav-text">Jadwal</span>
+        <span class="nav-text">${dict.navSchedule}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="Pindah Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'reschedule' ? 'active' : ''}" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="${dict.navReschedule}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        <span class="nav-text">Pindah Jadwal</span>
+        <span class="nav-text">${dict.navReschedule}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="chat" onclick="navigateToView('chat'); return false;" title="Chat AI">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'chat' ? 'active' : ''}" data-nav="chat" onclick="navigateToView('chat'); return false;" title="${dict.navChat}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span class="nav-text">Chat AI</span>
+        <span class="nav-text">${dict.navChat}</span>
       </a>
     `;
   } else if (roleKey === "dosen") {
     navContainer.innerHTML = `
-      <a href="#" class="nav-item-link active" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="Dashboard">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'dashboard' ? 'active' : ''}" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="${dict.navDashboard}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span class="nav-text">Dashboard</span>
+        <span class="nav-text">${dict.navDashboard}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="classes" onclick="navigateToView('classes'); return false;" title="Matakuliah">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'classes' ? 'active' : ''}" data-nav="classes" onclick="navigateToView('classes'); return false;" title="${dict.navClasses}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span class="nav-text">Matakuliah</span>
+        <span class="nav-text">${dict.navClasses}</span>
         <span class="nav-badge" id="nav-badge-classes-count">${APP_DATA.dosen.classes.length}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="schedule" onclick="navigateToView('schedule'); return false;" title="Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'schedule' ? 'active' : ''}" data-nav="schedule" onclick="navigateToView('schedule'); return false;" title="${dict.navSchedule}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span class="nav-text">Jadwal</span>
+        <span class="nav-text">${dict.navSchedule}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="Pindah Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'reschedule' ? 'active' : ''}" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="${dict.navReschedule}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        <span class="nav-text">Pindah Jadwal</span>
+        <span class="nav-text">${dict.navReschedule}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="chat" onclick="navigateToView('chat'); return false;" title="Chat AI">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'chat' ? 'active' : ''}" data-nav="chat" onclick="navigateToView('chat'); return false;" title="${dict.navChat}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span class="nav-text">Chat AI</span>
+        <span class="nav-text">${dict.navChat}</span>
       </a>
     `;
   } else if (roleKey === "baak") {
     navContainer.innerHTML = `
-      <a href="#" class="nav-item-link active" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="Dashboard">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'dashboard' ? 'active' : ''}" data-nav="dashboard" onclick="navigateToView('dashboard'); return false;" title="${dict.navDashboard}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span class="nav-text">Dashboard</span>
+        <span class="nav-text">${dict.navDashboard}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-requests" onclick="navigateToView('baak-requests'); return false;" title="Permintaan Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-requests' ? 'active' : ''}" data-nav="baak-requests" onclick="navigateToView('baak-requests'); return false;" title="${dict.navRequests}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span class="nav-text">Permintaan Jadwal</span>
+        <span class="nav-text">${dict.navRequests}</span>
         <span class="nav-badge alert">${ALL_RESCHEDULE_REQUESTS.filter(r => r.status.includes('Menunggu')).length}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="classes" onclick="navigateToView('classes'); return false;" title="Matakuliah">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'classes' ? 'active' : ''}" data-nav="classes" onclick="navigateToView('classes'); return false;" title="${dict.navClasses}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span class="nav-text">Matakuliah</span>
+        <span class="nav-text">${dict.navClasses}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-rooms" onclick="navigateToView('baak-rooms'); return false;" title="Ruangan">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-rooms' ? 'active' : ''}" data-nav="baak-rooms" onclick="navigateToView('baak-rooms'); return false;" title="${dict.navRooms}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span class="nav-text">Ruangan</span>
+        <span class="nav-text">${dict.navRooms}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-subjects" onclick="navigateToView('baak-subjects'); return false;" title="Subjek">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-subjects' ? 'active' : ''}" data-nav="baak-subjects" onclick="navigateToView('baak-subjects'); return false;" title="${dict.navSubjects}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        <span class="nav-text">Subjek</span>
+        <span class="nav-text">${dict.navSubjects}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-lecturers" onclick="navigateToView('baak-lecturers'); return false;" title="Dosen">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-lecturers' ? 'active' : ''}" data-nav="baak-lecturers" onclick="navigateToView('baak-lecturers'); return false;" title="${dict.navLecturers}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span class="nav-text">Dosen</span>
+        <span class="nav-text">${dict.navLecturers}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-students" onclick="navigateToView('baak-students'); return false;" title="Mahasiswa">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-students' ? 'active' : ''}" data-nav="baak-students" onclick="navigateToView('baak-students'); return false;" title="${dict.navStudents}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        <span class="nav-text">Mahasiswa</span>
+        <span class="nav-text">${dict.navStudents}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="Pindah Jadwal">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'reschedule' ? 'active' : ''}" data-nav="reschedule" onclick="navigateToView('reschedule'); return false;" title="${dict.navReschedule}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        <span class="nav-text">Pindah Jadwal</span>
+        <span class="nav-text">${dict.navReschedule}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="chat" onclick="navigateToView('chat'); return false;" title="Chat AI">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'chat' ? 'active' : ''}" data-nav="chat" onclick="navigateToView('chat'); return false;" title="${dict.navChat}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span class="nav-text">Chat AI</span>
+        <span class="nav-text">${dict.navChat}</span>
       </a>
-      <a href="#" class="nav-item-link" data-nav="baak-system-logs" onclick="navigateToView('baak-system-logs'); return false;" title="Log & Sistem">
+      <a href="#" class="nav-item-link ${activeCurrentView === 'baak-system-logs' ? 'active' : ''}" data-nav="baak-system-logs" onclick="navigateToView('baak-system-logs'); return false;" title="${dict.navSystemLogs}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <span class="nav-text">Log & Sistem</span>
+        <span class="nav-text">${dict.navSystemLogs}</span>
       </a>
     `;
   }
